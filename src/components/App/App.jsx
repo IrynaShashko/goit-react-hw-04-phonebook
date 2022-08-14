@@ -1,65 +1,56 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import { AppContainer, H1, H2, PhonebookContainer } from '../App/App.styled';
 import ContactsForm from '../Phonebook/Phonebook';
 import Filter from 'components/Filter/Filter';
 import Contacts from 'components/Contacts/Contacts';
+import { useEffect } from 'react';
 
-class App extends Component {
-  state = {
-    contacts: [],
-    filter: '',
+const App = () => {
+  const [contacts, setContacts] = useState(() => {
+    return JSON.parse(window.localStorage.getItem('contacts')) ?? [];
+  });
+  const [search, setSearch] = useState('');
+
+  const formSumbit = (name, number) => {
+    setContacts(prevState => [...prevState, { name, number }]);
+  };
+  const deleteContact = id => {
+    console.log(id);
+    setContacts(contacts.filter(contact => contact.id !== id));
+    // setContacts(contacts.filter(contact => contact.id !== id));
+  };
+  const handleChange = e => {
+    setSearch(e.target.value);
   };
 
-  formSumbit = data => {
-    this.setState({
-      contacts: [...this.state.contacts, data],
-    });
-  };
-  deleteContact = id => {
-    this.setState({
-      contacts: this.state.contacts.filter(contact => contact.id !== id),
-    });
-  };
-  handleChange = e => {
-    this.setState({
-      filter: e.currentTarget.value,
-    });
-  };
-  componentDidMount() {
-    const contacts = localStorage.getItem('contacts');
-    const parsedContacts = JSON.parse(contacts) || [];
-    this.setState({
-      contacts: parsedContacts,
-    });
-  }
-  componentDidUpdate(prevProps, prevState) {
-    if (this.state.contacts !== prevState.contacts) {
-      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
-    }
-  }
+  useEffect(() => {
+    const contact = window.localStorage.getItem('contacts');
+    const parsedContact = JSON.parse(contact) || [];
+    setContacts(parsedContact);
+  }, []);
 
-  render() {
-    const normalizedContacts = this.state.filter.toLowerCase();
-    const visibleContacts = this.state.contacts.filter(contact =>
-      contact.name.toLowerCase().includes(normalizedContacts)
-    );
+  useEffect(() => {
+    window.localStorage.setItem('contacts', JSON.stringify(contacts));
+  }, [contacts]);
 
-    return (
-      <AppContainer>
-        <PhonebookContainer>
-          <H1>Phonebook</H1>
-          <ContactsForm onSubmit={this.formSumbit} />
-          <H2>Contacts</H2>
-          <Filter filter={this.state.filter} handleChange={this.handleChange} />
-          {visibleContacts && (
-            <Contacts
-              contacts={visibleContacts}
-              deleteContact={this.deleteContact}
-            />
-          )}
-        </PhonebookContainer>
-      </AppContainer>
-    );
-  }
-}
+  const normalizedContacts = search.toLowerCase();
+  const visibleContacts = contacts.filter(contact =>
+    contact.name.toLowerCase().includes(normalizedContacts)
+  );
+
+  return (
+    <AppContainer>
+      <PhonebookContainer>
+        <H1>Phonebook</H1>
+        <ContactsForm onSubmit={formSumbit} />
+        <H2>Contacts</H2>
+        <Filter search={search} handleChange={handleChange} />
+        {visibleContacts && (
+          <Contacts contacts={visibleContacts} deleteContact={deleteContact} />
+        )}
+      </PhonebookContainer>
+    </AppContainer>
+  );
+};
+
 export default App;
