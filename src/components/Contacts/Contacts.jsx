@@ -24,7 +24,7 @@ const Contacts = ({ contacts, deleteContact }) => {
               <ContactsNumber>{contact.number}</ContactsNumber>
             </ContactsContainer>
             <ContactsItemButton
-              type="submit"
+              type="button"
               onClick={() => deleteContact(contact.id)}
             >
               X

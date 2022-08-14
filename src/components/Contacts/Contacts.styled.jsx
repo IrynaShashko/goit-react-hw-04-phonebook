@@ -19,9 +19,8 @@ export const ContactsItem = styled.li`
   border-radius: 50px;
   background-color: #d37fae;
   box-shadow: 0px 0px 2px 2px rgba(0, 0, 0, 0.75);
-  &:hover,
-  &:focus {
-    scale: 1.1;
+  &:hover {
+    scale: 1.05;
   }
 `;
 export const ContactsContainer = styled.div`
